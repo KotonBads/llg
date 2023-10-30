@@ -1,4 +1,4 @@
-module github.com/KotonBads/llg-launcher/launcher
+module github.com/KotonBads/llg
 
 go 1.20
 
