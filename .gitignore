@@ -2,3 +2,4 @@ temp/*
 tests/*
 launcherlogs/*
 go.sum
+.ichor/*
