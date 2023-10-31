@@ -9,7 +9,7 @@ func (args MinecraftArgs) CompileArgs(sep string) string {
 	var final []string
 
 	final = append(final, strings.Join(args.BaseArgs, " "))
-	final = append(final, fmt.Sprintf("-Xms%d -Xmx%d -Xss%d -Xmn%d", args.RAM.Xms, args.RAM.Xmx, args.RAM.Xss, args.RAM.Xmn))
+	final = append(final, fmt.Sprintf("-Xms%dM -Xmx%dM -Xss%dM -Xmn%dM", args.RAM.Xms, args.RAM.Xmx, args.RAM.Xss, args.RAM.Xmn))
 	final = append(final, strings.Join(args.JVMArgs, " "))
 	final = append(final, strings.Join(args.Classpath, sep))
 	final = append(final, args.MainClass)
