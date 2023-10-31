@@ -6,6 +6,7 @@ import (
 	"time"
 
 	utils "github.com/KotonBads/llgutils"
+	internal "llg/internal"
 )
 
 func main() {
