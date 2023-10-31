@@ -1,12 +1,18 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"log"
+	"os"
+	"os/exec"
+	"runtime"
+	"strings"
 	"time"
 
-	utils "github.com/KotonBads/llgutils"
 	internal "github.com/KotonBads/llg/internal"
+	utils "github.com/KotonBads/llgutils"
 )
 
 func main() {
@@ -48,8 +54,8 @@ func main() {
 			"jdk.naming.dns",
 			"--add-exports",
 			"jdk.naming.dns/com.sun.jndi.dns=java.naming",
-			"-Djna.boot.library.path=natives",
-			"-Djava.library.path=natives",
+			"-Djna.boot.library.path=temp/natives",
+			"-Djava.library.path=temp/natives",
 			"-Dlog4j2.formatMsgNoLookups=true",
 			"--add-opens",
 			"java.base/java.io=ALL-UNNAMED",
@@ -112,5 +118,25 @@ func main() {
 		Fullscreen:     true,
 	}
 
-	fmt.Println(args.CompileArgs(":"))
+	program := "bash"
+	input := "-c"
+
+	if runtime.GOOS == "win32" {
+		program = "cmd"
+		input = "/c"
+	}
+
+	cmd := exec.Command(program, input, "/home/koton-bads/.lunarclient/custom/graalvm-ee-java17-22.3.0/bin/java "+args.CompileArgs(":"))
+
+	var stdBuffer bytes.Buffer
+	mw := io.MultiWriter(os.Stdout, &stdBuffer)
+
+	cmd.Stdout = mw
+	cmd.Stderr = mw
+
+	fmt.Printf("\nExecuting: \n%s\n\n", strings.Join(cmd.Args, " "))
+
+	if err := cmd.Run(); err != nil {
+		panic(err)
+	}
 }
