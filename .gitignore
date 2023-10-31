@@ -1,4 +1,4 @@
 temp/*
-test/*
+tests/*
 launcherlogs/*
 go.sum
