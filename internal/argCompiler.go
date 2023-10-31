@@ -11,6 +11,7 @@ func (args MinecraftArgs) CompileArgs(sep string) string {
 	final = append(final, strings.Join(args.BaseArgs, " "))
 	final = append(final, fmt.Sprintf("-Xms%dM -Xmx%dM -Xss%dM -Xmn%dM", args.RAM.Xms, args.RAM.Xmx, args.RAM.Xss, args.RAM.Xmn))
 	final = append(final, strings.Join(args.JVMArgs, " "))
+	final = append(final, "-cp")
 	final = append(final, strings.Join(args.Classpath, sep))
 	final = append(final, args.MainClass)
 	final = append(final, "--version "+args.Version)
