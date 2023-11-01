@@ -4,3 +4,4 @@ launcherlogs/*
 go.sum
 .ichor/*
 logs/*
+config.json
