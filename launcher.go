@@ -46,14 +46,14 @@ func main() {
 		OS:      "linux",
 		Arch:    "x64",
 		Version: "1.8.9",
-		Module:  "lunar",
+		Module:  "forge",
 	}
 
 	launchmeta, _ := utils.FetchLaunchMeta(launchbody)
 	launchmeta.DownloadArtifacts(config.WorkingDirectory)
 	launchmeta.DownloadCosmetics(config.WorkingDirectory + "/textures")
 
-	classpath, external, natives := launchmeta.SortFiles(config.WorkingDirectory)
+	classpath, ichorClassPath, external, natives := launchmeta.SortFiles(config.WorkingDirectory)
 
 	for _, val := range natives {
 		utils.Unzip(val, config.WorkingDirectory+"/natives")
@@ -72,21 +72,22 @@ func main() {
 			"-XX:+UseStringDeduplication",
 			"-Dichor.prebakeClasses=false",
 			"-Dlunar.webosr.url=file:index.html"},
-		JVMArgs:        config.JVMArgs,
-		Classpath:      classpath,
-		IchorClassPath: external,
-		RAM:            config.Memory,
-		Width:          config.Width,
-		Height:         config.Height,
-		MainClass:      launchmeta.LaunchTypeData.MainClass,
-		Version:        launchbody.Version,
-		AssetIndex:     internal.AssetIndex(launchbody.Version),
-		GameDir:        config.GameDirectory,
-		TexturesDir:    config.WorkingDirectory + "/textures",
-		WebOSRDir:      config.WorkingDirectory + "/natives",
-		WorkingDir:     config.WorkingDirectory,
-		ClassPathDir:   config.WorkingDirectory,
-		Fullscreen:     config.Fullscreen,
+		JVMArgs:            config.JVMArgs,
+		Classpath:          classpath,
+		IchorClassPath:     ichorClassPath,
+		IchorExternalFiles: external,
+		RAM:                config.Memory,
+		Width:              config.Width,
+		Height:             config.Height,
+		MainClass:          launchmeta.LaunchTypeData.MainClass,
+		Version:            launchbody.Version,
+		AssetIndex:         internal.AssetIndex(launchbody.Version),
+		GameDir:            config.GameDirectory,
+		TexturesDir:        config.WorkingDirectory + "/textures",
+		WebOSRDir:          config.WorkingDirectory + "/natives",
+		WorkingDir:         config.WorkingDirectory,
+		ClassPathDir:       config.WorkingDirectory,
+		Fullscreen:         config.Fullscreen,
 	}
 
 	program := "bash"
