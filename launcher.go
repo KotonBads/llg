@@ -43,8 +43,17 @@ func main() {
 	}
 
 	launchbody := utils.LaunchBody{
-		OS:      "linux",
-		Arch:    "x64",
+		OS: runtime.GOOS,
+		Arch: func() string {
+			switch runtime.GOARCH {
+			case "amd64":
+				return "x64"
+			case "386":
+				return "ia32" // afaik only windows got 32 bit support
+			default:
+				return runtime.GOARCH
+			}
+		}(),
 		Version: "1.8.9",
 		Module:  "forge",
 	}
