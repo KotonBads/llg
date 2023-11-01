@@ -8,23 +8,24 @@ type Memory struct {
 }
 
 type MinecraftArgs struct {
-	BaseArgs       []string
-	JVMArgs        []string
-	Classpath      []string
-	IchorClassPath []string
-	RAM            Memory
-	Width          int
-	Height         int
-	MainClass      string
-	Version        string
-	AssetIndex     string
-	GameDir        string
-	TexturesDir    string
-	UIDir          string
-	WebOSRDir      string
-	WorkingDir     string
-	ClassPathDir   string
-	Fullscreen     bool
+	BaseArgs           []string
+	JVMArgs            []string
+	Classpath          []string
+	IchorClassPath     []string
+	IchorExternalFiles []string
+	RAM                Memory
+	Width              int
+	Height             int
+	MainClass          string
+	Version            string
+	AssetIndex         string
+	GameDir            string
+	TexturesDir        string
+	UIDir              string
+	WebOSRDir          string
+	WorkingDir         string
+	ClassPathDir       string
+	Fullscreen         bool
 }
 
 type ConfigFile struct {
