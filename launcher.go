@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -27,106 +28,78 @@ func main() {
 
 	log.SetOutput(file)
 
+	var config internal.ConfigFile
+
+	// read config file
+	configFile, err := os.ReadFile("config.json")
+	if err != nil {
+		log.Fatalf("[ERROR] Could not read config file: %s", err)
+	}
+
+	// unmarshal config file into config
+	err = json.Unmarshal(configFile, &config)
+	if err != nil {
+		log.Fatalf("[ERROR] Could not unmarshal config file: %s", err)
+	}
+
 	launchbody := utils.LaunchBody{
 		OS:      "linux",
 		Arch:    "x64",
 		Version: "1.8.9",
 		Module:  "lunar",
 	}
-	launchmeta, _ := utils.FetchLaunchMeta(launchbody)
-	launchmeta.DownloadArtifacts("temp")
-	launchmeta.DownloadCosmetics("temp/textures")
 
-	classpath, external, natives := launchmeta.SortFiles("temp")
+	launchmeta, _ := utils.FetchLaunchMeta(launchbody)
+	launchmeta.DownloadArtifacts(config.WorkingDirectory)
+	launchmeta.DownloadCosmetics(config.WorkingDirectory + "/textures")
+
+	classpath, external, natives := launchmeta.SortFiles(config.WorkingDirectory)
 
 	for _, val := range natives {
-		utils.Unzip(val, "temp/natives")
+		utils.Unzip(val, config.WorkingDirectory+"/natives")
 	}
 
-	ram := internal.RamAlloc{
-		Xmx: 3072,
-		Xms: 3072,
-		Xmn: 1024,
-		Xss: 2,
-	}
 	args := internal.MinecraftArgs{
 		BaseArgs: []string{"--add-modules",
 			"jdk.naming.dns",
 			"--add-exports",
 			"jdk.naming.dns/com.sun.jndi.dns=java.naming",
-			"-Djna.boot.library.path=temp/natives",
-			"-Djava.library.path=temp/natives",
+			"-Djna.boot.library.path=" + config.WorkingDirectory + "/natives",
+			"-Djava.library.path=" + config.WorkingDirectory + "/natives",
 			"-Dlog4j2.formatMsgNoLookups=true",
 			"--add-opens",
 			"java.base/java.io=ALL-UNNAMED",
 			"-XX:+UseStringDeduplication",
 			"-Dichor.prebakeClasses=false",
 			"-Dlunar.webosr.url=file:index.html"},
-		JVMArgs: []string{"-XX:+UnlockExperimentalVMOptions",
-			"-XX:+UnlockDiagnosticVMOptions",
-			"-XX:+AlwaysActAsServerClassMachine",
-			"-XX:+AlwaysPreTouch",
-			"-XX:+DisableExplicitGC",
-			"-XX:+UseNUMA",
-			"-XX:AllocatePrefetchStyle=3",
-			"-XX:NmethodSweepActivity=1",
-			"-XX:+UseG1GC",
-			"-XX:MaxGCPauseMillis=37",
-			"-XX:+PerfDisableSharedMem",
-			"-XX:G1HeapRegionSize=16M",
-			"-XX:G1NewSizePercent=23",
-			"-XX:G1ReservePercent=20",
-			"-XX:SurvivorRatio=32",
-			"-XX:G1MixedGCCountTarget=3",
-			"-XX:G1HeapWastePercent=20",
-			"-XX:InitiatingHeapOccupancyPercent=10",
-			"-XX:G1RSetUpdatingPauseTimePercent=0",
-			"-XX:MaxTenuringThreshold=1",
-			"-XX:G1SATBBufferEnqueueingThresholdPercent=30",
-			"-XX:G1ConcMarkStepDurationMillis=5.0",
-			"-XX:G1ConcRSHotCardLimit=16",
-			"-XX:G1ConcRefinementServiceIntervalMillis=150",
-			"-XX:GCTimeRatio=99",
-			"-XX:ReservedCodeCacheSize=400M",
-			"-XX:NonNMethodCodeHeapSize=12M",
-			"-XX:ProfiledCodeHeapSize=194M",
-			"-XX:NonProfiledCodeHeapSize=194M",
-			"-XX:-DontCompileHugeMethods",
-			"-XX:MaxNodeLimit=240000",
-			"-XX:NodeLimitFudgeFactor=8000",
-			"-XX:+UseVectorCmov",
-			"-XX:+PerfDisableSharedMem",
-			"-XX:+UseFastUnorderedTimeStamps",
-			"-XX:+UseCriticalJavaThreadPriority",
-			"-XX:+EagerJVMCI",
-			"-XX:+UseTransparentHugePages",
-			"-Dgraal.TuneInlinerExploration=1",
-			"-Dgraal.CompilerConfiguration=enterprise"},
+		JVMArgs:        config.JVMArgs,
 		Classpath:      classpath,
 		IchorClassPath: external,
-		RAM:            ram,
-		Width:          1366,
-		Height:         768,
-		MainClass:      "com.moonsworth.lunar.genesis.Genesis",
-		Version:        "1.8.9",
-		AssetIndex:     "1.8",
-		GameDir:        "~/.minecraft",
-		TexturesDir:    "temp/textures",
-		WebOSRDir:      "temp/natives",
-		WorkingDir:     "temp",
-		ClassPathDir:   "temp",
-		Fullscreen:     true,
+		RAM:            config.Memory,
+		Width:          config.Width,
+		Height:         config.Height,
+		MainClass:      launchmeta.LaunchTypeData.MainClass,
+		Version:        launchbody.Version,
+		AssetIndex:     internal.AssetIndex(launchbody.Version),
+		GameDir:        config.GameDirectory,
+		TexturesDir:    config.WorkingDirectory + "/textures",
+		WebOSRDir:      config.WorkingDirectory + "/natives",
+		WorkingDir:     config.WorkingDirectory,
+		ClassPathDir:   config.WorkingDirectory,
+		Fullscreen:     config.Fullscreen,
 	}
 
 	program := "bash"
 	input := "-c"
+	sep := ":"
 
 	if runtime.GOOS == "win32" {
 		program = "cmd"
 		input = "/c"
+		sep = ";"
 	}
 
-	cmd := exec.Command(program, input, "/home/koton-bads/.lunarclient/custom/graalvm-ee-java17-22.3.0/bin/java "+args.CompileArgs(":"))
+	cmd := exec.Command(program, input, fmt.Sprintf("%s %s", config.JRE, args.CompileArgs(sep)))
 
 	var stdBuffer bytes.Buffer
 	mw := io.MultiWriter(os.Stdout, &stdBuffer)
