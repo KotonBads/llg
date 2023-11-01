@@ -2,13 +2,12 @@ package main
 
 import (
 	"bytes"
-	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"log"
 	"os"
 	"os/exec"
-	"runtime"
 	"strings"
 	"time"
 
@@ -28,40 +27,24 @@ func main() {
 
 	log.SetOutput(file)
 
+	version := flag.String("version", "1.8.9", "Minecraft Version")
+	module := flag.String("module", "lunar", "Module to use")
+	cf := flag.String("config", "config.json", "Config file")
+
+	flag.Parse()
+
 	var config internal.ConfigFile
-
-	// read config file
-	configFile, err := os.ReadFile("config.json")
-	if err != nil {
-		log.Fatalf("[ERROR] Could not read config file: %s", err)
-	}
-
-	// unmarshal config file into config
-	err = json.Unmarshal(configFile, &config)
-	if err != nil {
-		log.Fatalf("[ERROR] Could not unmarshal config file: %s", err)
-	}
+	config.LoadConfig(*cf)
 
 	launchbody := utils.LaunchBody{
-		OS: func() string {
-			if runtime.GOOS == "windows" {
-				return "win32"
-			}
-			return runtime.GOOS
-		}(),
-		Arch: func() string {
-			switch runtime.GOARCH {
-			case "amd64":
-				return "x64"
-			case "386":
-				return "ia32" // afaik only windows got 32 bit support
-			default:
-				return runtime.GOARCH
-			}
-		}(),
-		Version: "1.8.9",
-		Module:  "forge",
+		OS:      internal.CorrectedOS(),
+		Arch:    internal.CorrectedArch(),
+		Version: *version,
+		Module:  *module,
 	}
+
+	fmt.Println("Downloading Assets...")
+	fmt.Printf("See logs: launcherlogs/%s.log\n\n", timestamp)
 
 	launchmeta, _ := utils.FetchLaunchMeta(launchbody)
 	launchmeta.DownloadArtifacts(config.WorkingDirectory)
@@ -104,15 +87,7 @@ func main() {
 		Fullscreen:         config.Fullscreen,
 	}
 
-	program := "bash"
-	input := "-c"
-	sep := ":"
-
-	if runtime.GOOS == "windows" {
-		program = "cmd"
-		input = "/c"
-		sep = ";"
-	}
+	program, input, sep := internal.Command()
 
 	cmd := exec.Command(program, input, fmt.Sprintf("%s %s", config.JRE, args.CompileArgs(sep)))
 
