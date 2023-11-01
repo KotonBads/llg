@@ -1,10 +1,10 @@
 package internal
 
-type RamAlloc struct {
-	Xmx int
-	Xms int
-	Xmn int
-	Xss int
+type Memory struct {
+	Xmx int `json:"Xmx"`
+	Xms int `json:"Xms"`
+	Xmn int `json:"Xmn"`
+	Xss int `json:"Xss"`
 }
 
 type MinecraftArgs struct {
@@ -12,7 +12,7 @@ type MinecraftArgs struct {
 	JVMArgs        []string
 	Classpath      []string
 	IchorClassPath []string
-	RAM            RamAlloc
+	RAM            Memory
 	Width          int
 	Height         int
 	MainClass      string
@@ -25,4 +25,15 @@ type MinecraftArgs struct {
 	WorkingDir     string
 	ClassPathDir   string
 	Fullscreen     bool
+}
+
+type ConfigFile struct {
+	JRE              string   `json:"JRE"`
+	Memory           Memory   `json:"Memory"`
+	WorkingDirectory string   `json:"WorkingDirectory"`
+	GameDirectory    string   `json:"GameDirectory"`
+	Width            int      `json:"Width"`
+	Height           int      `json:"Height"`
+	Fullscreen       bool     `json:"Fullscreen"`
+	JVMArgs          []string `json:"JVMArgs"`
 }
