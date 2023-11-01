@@ -43,7 +43,12 @@ func main() {
 	}
 
 	launchbody := utils.LaunchBody{
-		OS: runtime.GOOS,
+		OS: func() string {
+			if runtime.GOOS == "windows" {
+				return "win32"
+			}
+			return runtime.GOOS
+		}(),
 		Arch: func() string {
 			switch runtime.GOARCH {
 			case "amd64":
@@ -103,7 +108,7 @@ func main() {
 	input := "-c"
 	sep := ":"
 
-	if runtime.GOOS == "win32" {
+	if runtime.GOOS == "windows" {
 		program = "cmd"
 		input = "/c"
 		sep = ";"
