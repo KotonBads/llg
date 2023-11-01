@@ -1,0 +1,54 @@
+package internal
+
+import (
+	"encoding/json"
+	"log"
+	"os"
+	"runtime"
+)
+
+func (config *ConfigFile) LoadConfig(path string) {
+	// read config file
+	configFile, err := os.ReadFile(path)
+	if err != nil {
+		log.Fatalf("[ERROR] Could not read config file: %s", err)
+	}
+
+	// unmarshal config file into config
+	err = json.Unmarshal(configFile, &config)
+	if err != nil {
+		log.Fatalf("[ERROR] Could not unmarshal config file: %s", err)
+	}
+}
+
+func CorrectedArch() string {
+	switch runtime.GOARCH {
+	case "amd64":
+		return "x64"
+	case "386":
+		return "ia32" // afaik only windows got 32 bit support
+	default:
+		return runtime.GOARCH
+	}
+}
+
+func CorrectedOS() string {
+	if runtime.GOOS == "windows" {
+		return "win32"
+	}
+	return runtime.GOOS
+}
+
+func Command() (program string, input string, sep string) {
+	program = "bash"
+	input = "-c"
+	sep = ":"
+
+	if runtime.GOOS == "windows" {
+		program = "cmd"
+		input = "/c"
+		sep = ";"
+	}
+
+	return program, input, sep
+}
