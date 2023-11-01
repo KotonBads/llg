@@ -27,6 +27,7 @@ func (args MinecraftArgs) CompileArgs(sep string) string {
 	final = append(final, "--classpathDir "+args.ClassPathDir)
 	final = append(final, "--ichorClassPath "+strings.Join(args.Classpath, ","))
 	final = append(final, "--ichorExternalFiles "+strings.Join(args.IchorClassPath, ","))
+	final = append(final, fmt.Sprintf("--fullscreen %t", args.Fullscreen))
 
 	return strings.Join(final, " ")
 }
