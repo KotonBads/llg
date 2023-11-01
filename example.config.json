@@ -1,0 +1,17 @@
+{
+    "JRE": "path/to/jre",
+    "Memory": {
+        "Xmx": 1024,
+        "Xms": 512,
+        "Xmn": 128,
+        "Xss": 2
+    },
+    "WorkingDirectory": "path/to/working/directory",
+    "GameDirectory": "path/to/game/directory",
+    "Width": 800,
+    "Height": 600,
+    "Fullscreen": false,
+    "JVMArgs": [
+        "-XX:+UseG1GC"
+    ]
+}
