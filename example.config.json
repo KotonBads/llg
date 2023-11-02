@@ -6,6 +6,15 @@
         "Xmn": 128,
         "Xss": 2
     },
+    "JavaAgents": [
+        "path/to/java/agent.jar"
+    ],
+    "EnvironmentVariables": [
+        {
+            "Key": "key",
+            "Value": "value"
+        }
+    ],
     "WorkingDirectory": "path/to/working/directory",
     "GameDirectory": "path/to/game/directory",
     "Width": 800,
