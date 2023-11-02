@@ -19,7 +19,7 @@ func main() {
 	// logging
 	timestamp := time.Now().Format("2006-01-02 15:04:05")
 
-	file, err := utils.CreateLog(fmt.Sprintf("launcherlogs/%s.log", timestamp))
+	file, err := internal.CreateLog(fmt.Sprintf("launcherlogs/%s.log", timestamp))
 
 	if err != nil {
 		log.Printf("[WARN] Could not create a log file: %s", err)
@@ -87,7 +87,7 @@ func main() {
 		Fullscreen:         config.Fullscreen,
 	}
 
-	program, input, sep := internal.Command()
+	program, input, sep := internal.ShellCommand()
 
 	cmd := exec.Command(program, input, fmt.Sprintf("%s %s", config.JRE, args.CompileArgs(sep)))
 
