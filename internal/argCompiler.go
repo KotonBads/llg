@@ -13,6 +13,14 @@ func (args MinecraftArgs) CompileArgs(sep string) string {
 	final = append(final, strings.Join(args.JVMArgs, " "))
 	final = append(final, "-cp")
 	final = append(final, strings.Join(args.Classpath, sep))
+
+	// special case for java agents
+	if len(args.JavaAgents) != 0 {
+		for _, val := range args.JavaAgents {
+			final = append(final, "-javaagent:"+val)
+		}
+	}
+
 	final = append(final, args.MainClass)
 	final = append(final, "--version "+args.Version)
 	final = append(final, "--assetIndex "+args.AssetIndex)
