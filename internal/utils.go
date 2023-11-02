@@ -61,3 +61,10 @@ func CreateLog(path string) (*os.File, error) {
 
 	return os.Create(path)
 }
+
+func (config ConfigFile) SetEnv() {
+	for _, val := range config.EnvVars {
+		log.Printf("[ENV] Set Variable: %s = %s", val.Key, val.Value)
+		os.Setenv(val.Key, val.Value)
+	}
+}
