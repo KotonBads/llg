@@ -13,6 +13,7 @@ type MinecraftArgs struct {
 	Classpath          []string
 	IchorClassPath     []string
 	IchorExternalFiles []string
+	JavaAgents         []string
 	RAM                Memory
 	Width              int
 	Height             int
@@ -33,8 +34,13 @@ type ConfigFile struct {
 	Memory           Memory   `json:"Memory"`
 	WorkingDirectory string   `json:"WorkingDirectory"`
 	GameDirectory    string   `json:"GameDirectory"`
-	Width            int      `json:"Width"`
-	Height           int      `json:"Height"`
-	Fullscreen       bool     `json:"Fullscreen"`
-	JVMArgs          []string `json:"JVMArgs"`
+	JavaAgents       []string `json:"JavaAgents"`
+	EnvVars          []struct {
+		Key   string `json:"Key"`
+		Value string `json:"Value"`
+	} `json:"EnvironmentVariables"`
+	Width      int      `json:"Width"`
+	Height     int      `json:"Height"`
+	Fullscreen bool     `json:"Fullscreen"`
+	JVMArgs    []string `json:"JVMArgs"`
 }
