@@ -56,6 +56,8 @@ func main() {
 		utils.Unzip(val, config.WorkingDirectory+"/natives")
 	}
 
+	config.SetEnv()
+
 	args := internal.MinecraftArgs{
 		BaseArgs: []string{"--add-modules",
 			"jdk.naming.dns",
@@ -73,6 +75,7 @@ func main() {
 		Classpath:          classpath,
 		IchorClassPath:     ichorClassPath,
 		IchorExternalFiles: external,
+		JavaAgents:         config.JavaAgents,
 		RAM:                config.Memory,
 		Width:              config.Width,
 		Height:             config.Height,
@@ -98,6 +101,7 @@ func main() {
 	cmd.Stderr = mw
 
 	fmt.Printf("\nExecuting: \n%s\n\n", strings.Join(cmd.Args, " "))
+	log.Printf("[LAUNCH] Full cmdline: %s", strings.Join(cmd.Args, " "))
 
 	if err := cmd.Run(); err != nil {
 		panic(err)
