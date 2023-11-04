@@ -97,6 +97,10 @@ func main() {
 
 	cmd := exec.Command(program, input, fmt.Sprintf("%s %s", config.JRE, args.CompileArgs(sep)))
 
+	if len(config.PreJava) != 0 {
+		cmd = exec.Command(program, input, fmt.Sprintf("%s %s %s", config.PreJava, config.JRE, args.CompileArgs(sep)))
+	}
+
 	var stdBuffer bytes.Buffer
 	mw := io.MultiWriter(os.Stdout, &stdBuffer)
 
