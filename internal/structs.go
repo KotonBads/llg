@@ -34,6 +34,7 @@ type ConfigFile struct {
 	Memory           Memory   `json:"Memory"`
 	WorkingDirectory string   `json:"WorkingDirectory"`
 	GameDirectory    string   `json:"GameDirectory"`
+	PreJava          string   `json:"PreJava"`
 	JavaAgents       []string `json:"JavaAgents"`
 	EnvVars          []struct {
 		Key   string `json:"Key"`
