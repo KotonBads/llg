@@ -9,6 +9,7 @@
     "JavaAgents": [
         "path/to/java/agent.jar"
     ],
+    "PreJava": "path/to/program",
     "EnvironmentVariables": [
         {
             "Key": "key",
