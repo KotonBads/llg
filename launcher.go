@@ -22,10 +22,10 @@ func main() {
 	file, err := internal.CreateLog(fmt.Sprintf("launcherlogs/%s.log", timestamp))
 
 	if err != nil {
-		log.Printf("[WARN] Could not create a log file: %s", err)
+		fmt.Printf("[WARN] Could not create a log file: %s", err)
+	} else {
+		log.SetOutput(file)
 	}
-
-	log.SetOutput(file)
 
 	version := flag.String("version", "1.8.9", "Minecraft Version")
 	module := flag.String("module", "lunar", "Module to use")
@@ -43,8 +43,10 @@ func main() {
 		Module:  *module,
 	}
 
-	fmt.Println("Downloading Assets...")
+	fmt.Printf("Minecraft %s\n", *version)
+	fmt.Printf("%s module\n\n", *module)
 	fmt.Printf("See logs: launcherlogs/%s.log\n\n", timestamp)
+	fmt.Println("Downloading Assets...")
 
 	launchmeta, _ := utils.FetchLaunchMeta(launchbody)
 	launchmeta.DownloadArtifacts(config.WorkingDirectory)
@@ -52,6 +54,7 @@ func main() {
 
 	classpath, ichorClassPath, external, natives := launchmeta.SortFiles(config.WorkingDirectory)
 
+	fmt.Println("Extracting Natives...")
 	for _, val := range natives {
 		utils.Unzip(val, config.WorkingDirectory+"/natives")
 	}
