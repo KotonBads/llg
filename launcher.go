@@ -71,7 +71,6 @@ func main() {
 			"-Dlog4j2.formatMsgNoLookups=true",
 			"--add-opens",
 			"java.base/java.io=ALL-UNNAMED",
-			"-XX:+UseStringDeduplication",
 			"-Dichor.prebakeClasses=false",
 			"-Dlunar.webosr.url=file:index.html"},
 		JVMArgs:            config.JVMArgs,
