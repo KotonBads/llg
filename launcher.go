@@ -48,7 +48,7 @@ func main() {
 	fmt.Printf("See logs: launcherlogs/%s.log\n\n", timestamp)
 	fmt.Println("Downloading Assets...")
 
-	launchmeta, _ := utils.FetchLaunchMeta(launchbody)
+	launchmeta, _ := launchbody.FetchLaunchMeta()
 	launchmeta.DownloadArtifacts(config.WorkingDirectory)
 	launchmeta.DownloadCosmetics(config.WorkingDirectory + "/textures")
 
